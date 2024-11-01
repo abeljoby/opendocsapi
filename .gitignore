@@ -1,0 +1,9 @@
+# Ignore the virtual environment
+venv/
+
+# Byte-compiled files
+__pycache__/
+*.pyc
+
+# Environment-specific configuration
+.env
