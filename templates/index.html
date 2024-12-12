@@ -1,0 +1,17 @@
+<!doctype html>
+<title>Prompt!</title>
+<section class="content">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    {% if person %}
+        <h1>Hello {{ person }}!</h1>
+    {% else %}
+        <h1>Hello!</h1>
+    {% endif %}
+    <h2>Enter your prompt:</h2>
+    <input id="prompt">
+    <input type="submit" value="Prompt!" id="submit">
+    <h2>Generated messages:</h2>
+    {% for message in get_flashed_messages() %}
+        <div class="flash">{{ message }}</div>
+    {% endfor %}
+</section>
