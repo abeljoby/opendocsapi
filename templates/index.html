@@ -1,17 +1,97 @@
 <!doctype html>
 <title>Prompt!</title>
-<section class="content">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    {% if person %}
-        <h1>Hello {{ person }}!</h1>
-    {% else %}
-        <h1>Hello!</h1>
-    {% endif %}
-    <h2>Enter your prompt:</h2>
-    <input id="prompt">
-    <input type="submit" value="Prompt!" id="submit">
-    <h2>Generated messages:</h2>
-    {% for message in get_flashed_messages() %}
-        <div class="flash">{{ message }}</div>
-    {% endfor %}
-</section>
+<body>
+    <section class="content">
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+        {% block header %}
+        {% if person %}
+            <h1>Hello {{ person }}!</h1>
+        {% else %}
+            <h1>Hello!</h1>
+        {% endif %}
+        {% endblock %}
+        {% block content %}
+        <h2>Enter your prompt:</h2>
+        <form action="/prompt" method="post">
+            <label for="prompt">Prompt:</label>
+            <input type="text" name="prompt" id="prompt" required>
+            <input type="submit" value="Prompt!" id="send-btn">
+        </form>
+        <h2>Generated messages:</h2>
+        <!-- {% for message in get_flashed_messages() %} -->
+        <!-- {% endfor %} -->
+        <div class="messages">
+            {% for message in chat_history %}
+            <div
+              class="message-role {{ 'user' if message.role == 'user' else '' }}"
+            >
+              {{ message.role.capitalize() }}
+            </div>
+            <div
+              class="{{ 'user-message' if message.role == 'user' else 'assistant-message' }}"
+            >
+              {{ message.content }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endblock %}
+    </section>
+    <script>
+        document
+        .querySelector("form")
+        .addEventListener("submit", function (event) {
+          event.preventDefault();
+          const messageInput = document.querySelector(
+            "#prompt"
+          );
+          const message = messageInput.value.trim();
+          const chatContainer = document.querySelector(".messages");
+          // Append the user's message to the chat container
+          if (message) {
+            const roleDiv = document.createElement("div");
+            roleDiv.classList.add("message-role");
+            roleDiv.classList.add("user");
+
+            roleDiv.textContent = "User";
+            chatContainer.appendChild(roleDiv);
+
+            const userMessageDiv = document.createElement("div");
+            userMessageDiv.classList.add("user-message");
+            userMessageDiv.textContent = message;
+            chatContainer.appendChild(userMessageDiv);
+          }
+          // Clear the message input
+          messageInput.value = "";
+          // Send the user's message to the server using AJAX
+          fetch("/prompt", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ message: message }),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              if (data.success) {
+                const roleDiv = document.createElement("div");
+                roleDiv.classList.add("message-role");
+                roleDiv.classList.add("assistant");
+
+                roleDiv.textContent = "Assistant";
+                chatContainer.appendChild(roleDiv);
+
+                // Append the assistant's message to the chat container
+                const assistantMessageDiv = document.createElement("div");
+                assistantMessageDiv.classList.add("assistant-message");
+                assistantMessageDiv.textContent = data.message;
+                chatContainer.appendChild(assistantMessageDiv);
+                // Scroll to the bottom of the chat container
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+              }
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+            });
+        });
+    </script>
+</body>
