@@ -63,31 +63,31 @@ class Document(BaseModel):
     class Config:
         json_schema_extra = {
             "example": {
-                "_id": {"$oid": "66ab314b67082310f8c1dc4a"},
-                "id": "369",
+                "_id": {"$oid": "unique-object-id"},
+                "id": "document-id",
                 "title": "Sample Document",
                 "pages": [
                     {
-                        "p_id": "668014e8ad94a2476284f09d",
+                        "p_id": "page-1",
                         "heading": "Page 1 Heading",
                         "page_elements": [
-                            {"Heading": {"id": "66a27f0cd819929a916e742b", "data": "Introduction", "htype": 1}},
-                            {"Paragraph": {"id": "66a53f95ccb9935788357c85", "data": "This is a paragraph."}},
-                            {"Code": {"id": "67234b8b72dca6c708d134c6", "data": "print(\"Hello World\")", "lang": "python"}},
+                            {"Heading": {"id": "heading-1", "data": "Introduction", "htype": 1}},
+                            {"Paragraph": {"id": "para-1", "data": "This is a paragraph."}},
+                            {"Code": {"id": "code-1", "data": "print(\"Hello World\")", "lang": "python"}},
                             {"BulletList": {
                                 "id": "list-1",
                                 "lists": [
-                                    {"id": "66923fe319bc07581ce3647b", "value": "First item"},
-                                    {"id": "66bcbb5903ac6c52820e3d8a", "value": "Second item"}
+                                    {"id": "item-1", "value": "First item"},
+                                    {"id": "item-2", "value": "Second item"}
                                 ]
                             }},
-                            {"Image": {"id": "66cb593378a693fe12d2792d", "uri": "http://example.com/image.png"}}
+                            {"Image": {"id": "image-1", "uri": "http://example.com/image.png"}}
                         ]
                     }
                 ],
                 "image_uri": "http://example.com/document-preview.png",
                 "path": "/documents/doc1",
-                "publish": "true"
+                "publish": True
             }
         }
 
