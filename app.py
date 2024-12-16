@@ -11,17 +11,18 @@ class OID(BaseModel):
 class ID(BaseModel):
     id: str
 
-class HeadingElement(BaseModel):
+class BaseElement(BaseModel):
     id: str
+    type: str
+
+class HeadingElement(BaseElement):
     data: str
     htype: int
 
-class ParagraphElement(BaseModel):
-    id: str
+class ParagraphElement(BaseElement):
     data: str
 
-class CodeElement(BaseModel):
-    id: str
+class CodeElement(BaseElement):
     data: str
     lang: str
 
@@ -29,16 +30,15 @@ class ListItem(BaseModel):
     id: str
     value: str
 
-class BulletListElement(BaseModel):
-    id: str
+class BulletListElement(BaseElement):
     lists: List[ListItem]
 
-class ImageElement(BaseModel):
-    id: str
+class ImageElement(BaseElement):
     uri: str
 
-class PageElement(RootModel):
-    root : Union[
+class PageElement(BaseModel):
+    type: str
+    element: Union[
         HeadingElement,
         ParagraphElement,
         CodeElement,
@@ -71,17 +71,18 @@ class Document(BaseModel):
                         "p_id": "668014e8ad94a2476284f09d",
                         "heading": "Page 1 Heading",
                         "page_elements": [
-                            {"Heading": {"id": "66a27f0cd819929a916e742b", "data": "Introduction", "htype": 1}},
-                            {"Paragraph": {"id": "66a53f95ccb9935788357c85", "data": "This is a paragraph."}},
-                            {"Code": {"id": "67234b8b72dca6c708d134c6", "data": "print(\"Hello World\")", "lang": "python"}},
-                            {"BulletList": {
+                            # Change in JSON format for page elements
+                            {"type": "Heading", "element": {"id": "66a27f0cd819929a916e742b", "data": "Introduction", "htype": 1}},
+                            {"type": "Paragraph", "element": {"id": "66a53f95ccb9935788357c85", "data": "This is a paragraph."}},
+                            {"type": "Code", "element": {"id": "67234b8b72dca6c708d134c6", "data": "print(\"Hello World\")", "lang": "python"}},
+                            {"type": "BulletList", "element": {
                                 "id": "list-1",
                                 "lists": [
                                     {"id": "66923fe319bc07581ce3647b", "value": "First item"},
                                     {"id": "66bcbb5903ac6c52820e3d8a", "value": "Second item"}
                                 ]
                             }},
-                            {"Image": {"id": "66cb593378a693fe12d2792d", "uri": "http://example.com/image.png"}}
+                            {"type": "Image", "element": {"id": "66cb593378a693fe12d2792d", "uri": "http://example.com/image.png"}}
                         ]
                     }
                 ],
