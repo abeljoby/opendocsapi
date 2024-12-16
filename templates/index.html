@@ -81,9 +81,9 @@
                 chatContainer.appendChild(roleDiv);
 
                 // Append the assistant's message to the chat container
-                const assistantMessageDiv = document.createElement("div");
+                const assistantMessageDiv = document.createElement("pre");
                 assistantMessageDiv.classList.add("assistant-message");
-                assistantMessageDiv.textContent = data.message;
+                assistantMessageDiv.textContent = JSON.stringify(data.message, null, "\t");
                 chatContainer.appendChild(assistantMessageDiv);
                 // Scroll to the bottom of the chat container
                 chatContainer.scrollTop = chatContainer.scrollHeight;
