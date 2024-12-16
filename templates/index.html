@@ -1,5 +1,5 @@
 <!doctype html>
-<title>Prompt!</title>
+<title>Generate a document!</title>
 <body>
     <section class="content">
         <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
@@ -11,11 +11,11 @@
         {% endif %}
         {% endblock %}
         {% block content %}
-        <h2>Enter your prompt:</h2>
-        <form action="/prompt" method="post">
-            <label for="prompt">Prompt:</label>
+        <h2>Enter a document topic:</h2>
+        <form action="/document" method="post">
+            <label for="prompt">Topic:</label>
             <input type="text" name="prompt" id="prompt" required>
-            <input type="submit" value="Prompt!" id="send-btn">
+            <input type="submit" value="Generate!" id="send-btn">
         </form>
         <h2>Generated messages:</h2>
         <!-- {% for message in get_flashed_messages() %} -->
@@ -63,7 +63,7 @@
           // Clear the message input
           messageInput.value = "";
           // Send the user's message to the server using AJAX
-          fetch("/prompt", {
+          fetch("/document", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
