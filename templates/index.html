@@ -11,10 +11,17 @@
         {% endif %}
         {% endblock %}
         {% block content %}
-        <h2>Enter a document topic:</h2>
-        <form action="/document" method="post">
+        <h2>Enter the type of page element and topic:</h2>
+        <form action="/element" method="post">
             <label for="prompt">Topic:</label>
             <input type="text" name="prompt" id="prompt" required>
+            <select name="type" id="type" required>
+              <option value="Heading">Heading</option>
+              <option value="Paragraph" selected>Paragraph</option>
+              <option value="BulletList">Bullet List</option>
+              <option value="Image">Image</option>
+              <option value="Code">Code</option>
+            </select>
             <input type="submit" value="Generate!" id="send-btn">
         </form>
         <h2>Generated messages:</h2>
@@ -44,10 +51,14 @@
           const messageInput = document.querySelector(
             "#prompt"
           );
+          const typeInput = document.querySelector(
+            "#type"
+          );
           const message = messageInput.value.trim();
+          const elementType = typeInput.value;
           const chatContainer = document.querySelector(".messages");
           // Append the user's message to the chat container
-          if (message) {
+          if (message && elementType) {
             const roleDiv = document.createElement("div");
             roleDiv.classList.add("message-role");
             roleDiv.classList.add("user");
@@ -57,18 +68,18 @@
 
             const userMessageDiv = document.createElement("div");
             userMessageDiv.classList.add("user-message");
-            userMessageDiv.textContent = message;
+            userMessageDiv.textContent = `Generate a ${elementType} element about ${message}.`;
             chatContainer.appendChild(userMessageDiv);
           }
           // Clear the message input
           messageInput.value = "";
           // Send the user's message to the server using AJAX
-          fetch("/document", {
+          fetch("/element", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({ message: message }),
+            body: JSON.stringify({ message: message, type: elementType }),
           })
             .then((response) => response.json())
             .then((data) => {

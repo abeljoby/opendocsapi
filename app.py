@@ -27,7 +27,7 @@ class PageElement(BaseModel):
 					"id": "heading-1",
 					# "lang": null,
 					# "lists": null,
-					"type": "heading",
+					"type": "Heading",
 					# "uri": null
 				},
                 # Paragraph
@@ -37,7 +37,7 @@ class PageElement(BaseModel):
 					"id": "para-1",
 					# "lang": null,
 					# "lists": null,
-					"type": "paragraph",
+					"type": "Paragraph",
 					# "uri": null
 				},
                 # Code
@@ -47,7 +47,7 @@ class PageElement(BaseModel):
 					"id": "code-2",
 					"lang": "python",
 					# "lists": null,
-					"type": "code",
+					"type": "Code",
 					# "uri": null
 				},
                 # Image
@@ -57,7 +57,7 @@ class PageElement(BaseModel):
 					"id": "image-1",
 					# "lang": null,
 					# "lists": null,
-					"type": "image",
+					"type": "Image",
 					"uri": "http://example.com/python-usage.png"
 				},
                 # Bullet List
@@ -80,7 +80,7 @@ class PageElement(BaseModel):
 							"value": "Start coding!"
 						}
 					],
-					"type": "bullet_list",
+					"type": "BulletList",
 					# "uri": null
 				}
             ]
@@ -115,24 +115,24 @@ class Document(BaseModel):
                         "heading": "Page 1 Heading",
                         "page_elements": [
                             {
-                                "type": "heading",
+                                "type": "Heading",
                                 "id": "heading-1",
                                 "data": "Introduction",
                                 "htype": 1
                             },
                             {
-                                "type": "paragraph",
+                                "type": "Paragraph",
                                 "id": "para-1",
                                 "data": "This is a paragraph."
                             },
                             {
-                                "type": "code",
+                                "type": "Code",
                                 "id": "code-1",
                                 "data": "print(\"Hello World\")",
                                 "lang": "python"
                             },
                             {
-                                "type": "bullet_list",
+                                "type": "BulletList",
                                 "id": "list-1",
                                 "lists": [
                                     {"id": "item-1", "value": "First item"},
@@ -140,7 +140,7 @@ class Document(BaseModel):
                                 ]
                             },
                             {
-                                "type": "image",
+                                "type": "Image",
                                 "id": "image-1",
                                 "uri": "http://example.com/image.png"
                             }
@@ -244,7 +244,7 @@ def generate_element():
                 },
                 {
                     "role": "user",
-                    "content": f"Generate a {element_type} about {content}.",
+                    "content": f"Generate a {element_type} element about {content}.",
                 }
             ]
         )
