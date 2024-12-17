@@ -19,72 +19,13 @@ class PageElement(BaseModel):
 
     class Config:
         json_schema_extra = {
-            "examples": [
-                # Heading
-                {
-					"data": "Understanding Python Programming Language",
-					"htype": 1,
-					"id": "heading-1",
-					# "lang": null,
-					# "lists": null,
-					"type": "Heading",
-					# "uri": null
-				},
-                # Paragraph
-				{
-					"data": "Python is a high-level, interpreted programming language known for its readability and flexibility. It was created by Guido van Rossum and first released in 1991.",
-					# "htype": null,
-					"id": "para-1",
-					# "lang": null,
-					# "lists": null,
-					"type": "Paragraph",
-					# "uri": null
-				},
-                # Code
-                {
-					"data": "def add(a, b):\n    return a + b\n\nprint(add(5, 3))",
-					# "htype": null,
-					"id": "code-2",
-					"lang": "python",
-					# "lists": null,
-					"type": "Code",
-					# "uri": null
-				},
-                # Image
-                {
-					# "data": null,
-					# "htype": null,
-					"id": "image-1",
-					# "lang": null,
-					# "lists": null,
-					"type": "Image",
-					"uri": "http://example.com/python-usage.png"
-				},
-                # Bullet List
-                {
-					# "data": null,
-					# "htype": null,
-					"id": "list-2",
-					# "lang": null,
-					"lists": [
-						{
-							"id": "item-1",
-							"value": "Install Python"
-						},
-						{
-							"id": "item-2",
-							"value": "Choose an IDE"
-						},
-						{
-							"id": "item-3",
-							"value": "Start coding!"
-						}
-					],
-					"type": "BulletList",
-					# "uri": null
-				}
-            ]
+            "example": {
+                "type": "Paragraph",
+                "id": "para-1",
+                "data": "This is a paragraph."
+            }
         }
+
 
 class Page(BaseModel):
     p_id: str
@@ -232,6 +173,7 @@ def generate_document():
 def generate_element():
     content = request.json["message"]
     element_type = request.json["type"]
+    message = f"Generate a {element_type} element about {content}."
     chat_history.append({"role":"user","content": content})
     try:
         completion = client.beta.chat.completions.parse(
@@ -244,7 +186,7 @@ def generate_element():
                 },
                 {
                     "role": "user",
-                    "content": f"Generate a {element_type} element about {content}.",
+                    "content": message,
                 }
             ]
         )
