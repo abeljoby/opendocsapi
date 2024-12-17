@@ -17,6 +17,75 @@ class PageElement(BaseModel):
     lists: Optional[List[ListItem]] = None
     uri: Optional[str] = None
 
+    class Config:
+        json_schema_extra = {
+            "examples": [
+                # Heading
+                {
+					"data": "Understanding Python Programming Language",
+					"htype": 1,
+					"id": "heading-1",
+					# "lang": null,
+					# "lists": null,
+					"type": "heading",
+					# "uri": null
+				},
+                # Paragraph
+				{
+					"data": "Python is a high-level, interpreted programming language known for its readability and flexibility. It was created by Guido van Rossum and first released in 1991.",
+					# "htype": null,
+					"id": "para-1",
+					# "lang": null,
+					# "lists": null,
+					"type": "paragraph",
+					# "uri": null
+				},
+                # Code
+                {
+					"data": "def add(a, b):\n    return a + b\n\nprint(add(5, 3))",
+					# "htype": null,
+					"id": "code-2",
+					"lang": "python",
+					# "lists": null,
+					"type": "code",
+					# "uri": null
+				},
+                # Image
+                {
+					# "data": null,
+					# "htype": null,
+					"id": "image-1",
+					# "lang": null,
+					# "lists": null,
+					"type": "image",
+					"uri": "http://example.com/python-usage.png"
+				},
+                # Bullet List
+                {
+					# "data": null,
+					# "htype": null,
+					"id": "list-2",
+					# "lang": null,
+					"lists": [
+						{
+							"id": "item-1",
+							"value": "Install Python"
+						},
+						{
+							"id": "item-2",
+							"value": "Choose an IDE"
+						},
+						{
+							"id": "item-3",
+							"value": "Start coding!"
+						}
+					],
+					"type": "bullet_list",
+					# "uri": null
+				}
+            ]
+        }
+
 class Page(BaseModel):
     p_id: str
     heading: str
@@ -91,8 +160,7 @@ client = OpenAI()
 app = Flask(__name__)
 app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
 
-chat_history = [
-]
+chat_history = []
 
 @app.route("/", methods=['GET','POST'])
 @app.route("/<name>", methods=['GET','POST'])
@@ -135,6 +203,49 @@ def generate_document():
                     "content": "You are a document generator platform. You will be given a topic and should generate a document in the given structure."
                 },
                 {"role": "user", "content": content}
+            ]
+        )
+    except Exception as e:
+        return jsonify(success=False, message=str(e)), 500
+
+    try:
+        response = completion.choices[0]
+        text_content = response.message.parsed
+
+        if text_content:
+            # Convert the Document instance to a dictionary
+            text_content_dict = text_content.model_dump()
+
+            # Print the JSON response (for debugging purposes)
+            print("JSON Response from OpenAI:", text_content_dict)  # You can also use logging
+
+            # Append to chat history
+            chat_history.append({"role": "assistant", "content": text_content_dict})
+
+            return jsonify(success=True, message=text_content_dict)
+        else:
+            return jsonify(success=False, message="No text content found")
+    except Exception as e:
+        return jsonify(success=False, message=str(e)), 500
+
+@app.route("/element", methods=["POST",])
+def generate_element():
+    content = request.json["message"]
+    element_type = request.json["type"]
+    chat_history.append({"role":"user","content": content})
+    try:
+        completion = client.beta.chat.completions.parse(
+            response_format=PageElement,
+            model="gpt-4o-mini",
+            messages=[
+                {
+                    "role": "system",
+                    "content": "You are a document generator platform. You will be given the type and topic of page element and should generate a page element in the given structure."
+                },
+                {
+                    "role": "user",
+                    "content": f"Generate a {element_type} about {content}.",
+                }
             ]
         )
     except Exception as e:
