@@ -34,11 +34,11 @@
             >
               {{ message.role.capitalize() }}
             </div>
-            <div
+            <pre
               class="{{ 'user-message' if message.role == 'user' else 'assistant-message' }}"
             >
               {{ message.content }}
-            </div>
+            </pre>
             {% endfor %}
         </div>
         {% endblock %}
@@ -96,6 +96,16 @@
                 assistantMessageDiv.classList.add("assistant-message");
                 assistantMessageDiv.textContent = JSON.stringify(data.message, null, "\t");
                 chatContainer.appendChild(assistantMessageDiv);
+                if(data.message.uri) {
+                  const imageUri = data.message.uri;
+                  console.log(imageUri);
+                  const imageDiv = document.createElement("img");
+                  imageDiv.src = imageUri;
+                  imageDiv.alt = data.message.data;
+                  imageDiv.style.width = '20em';
+                  imageDiv.style.height = '20em';
+                  chatContainer.appendChild(imageDiv);
+                }
                 // Scroll to the bottom of the chat container
                 chatContainer.scrollTop = chatContainer.scrollHeight;
               }

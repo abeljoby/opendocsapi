@@ -147,6 +147,7 @@ def generate_document():
             ]
         )
     except Exception as e:
+        print(e)
         return jsonify(success=False, message=str(e)), 500
 
     try:
@@ -167,12 +168,14 @@ def generate_document():
         else:
             return jsonify(success=False, message="No text content found")
     except Exception as e:
+        print(e)
         return jsonify(success=False, message=str(e)), 500
 
 @app.route("/element", methods=["POST",])
 def generate_element():
     content = request.json["message"]
     element_type = request.json["type"]
+    print(content)
     message = f"Generate a {element_type} element about {content}."
     chat_history.append({"role":"user","content": content})
     try:
@@ -190,7 +193,9 @@ def generate_element():
                 }
             ]
         )
+
     except Exception as e:
+        print(e)
         return jsonify(success=False, message=str(e)), 500
 
     try:
@@ -198,6 +203,22 @@ def generate_element():
         text_content = response.message.parsed
 
         if text_content:
+            if element_type == "Image":
+                image_prompt = completion.choices[0].message.parsed.data
+                try:
+                    image_completion = client.images.generate(
+                        model="dall-e-3",
+                        prompt=image_prompt,
+                        size="1024x1024",
+                        quality="standard",
+                        n=1,
+                    )
+                    image_url = image_completion.data[0].url
+                    text_content.uri = image_url
+                    print(image_url)
+                except Exception as e:
+                    print(e)
+                    return jsonify(success=False, message=str(e)), 500
             # Convert the Document instance to a dictionary
             text_content_dict = text_content.model_dump()
 
@@ -211,4 +232,5 @@ def generate_element():
         else:
             return jsonify(success=False, message="No text content found")
     except Exception as e:
+        print(e)
         return jsonify(success=False, message=str(e)), 500
