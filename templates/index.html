@@ -11,16 +11,22 @@
         {% endif %}
         {% endblock %}
         {% block content %}
-        <h2>Enter the type of page element and topic:</h2>
+        <h2>Enter topic and type of output:</h2>
         <form action="/element" method="post">
             <label for="prompt">Topic:</label>
             <input type="text" name="prompt" id="prompt" required>
             <select name="type" id="type" required>
-              <option value="Heading">Heading</option>
-              <option value="Paragraph" selected>Paragraph</option>
-              <option value="BulletList">Bullet List</option>
-              <option value="Image">Image</option>
-              <option value="Code">Code</option>
+              <optgroup label="Document">
+                <option value="Document">Document</option>
+                <option value="Elements">Elements</option>
+              </optgroup>
+              <optgroup label="Page Element">
+                <option value="Heading">Heading</option>
+                <option value="Paragraph" selected>Paragraph</option>
+                <option value="BulletList">Bullet List</option>
+                <option value="Image">Image</option>
+                <option value="Code">Code</option>
+              </optgroup>
             </select>
             <input type="submit" value="Generate!" id="send-btn">
         </form>
@@ -48,6 +54,7 @@
         .querySelector("form")
         .addEventListener("submit", function (event) {
           event.preventDefault();
+          let prompt = '';
           const messageInput = document.querySelector(
             "#prompt"
           );
@@ -68,7 +75,8 @@
 
             const userMessageDiv = document.createElement("div");
             userMessageDiv.classList.add("user-message");
-            userMessageDiv.textContent = `Generate a ${elementType} element about ${message}.`;
+            if (elementType == "")
+            userMessageDiv.textContent = prompt;
             chatContainer.appendChild(userMessageDiv);
           }
           // Clear the message input
