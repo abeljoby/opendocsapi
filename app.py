@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, jsonify
 from openai import OpenAI
 import os
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import List, Optional, Union
 
 class HeadingElement(BaseModel):
     id: str
@@ -18,6 +18,9 @@ class HeadingElement(BaseModel):
             }
         }
 
+class HeadingObject(BaseModel):
+    Heading: HeadingElement
+
 class ParagraphElement(BaseModel):
     id: str
     data: str
@@ -29,6 +32,9 @@ class ParagraphElement(BaseModel):
                 "data": "Actix-web is a framework in rust to build complex highly sclable and blazingly fast web backends,it include features like logging chaining,middlewares,loggers,sharing database pool for multiple databses etc.\n\nwe will dive deep into building complex parts of backend,so that you can start building your idea."
             }
         }
+
+class ParagraphObject(BaseModel):
+    Paragraph: ParagraphElement
 
 class CodeElement(BaseModel):
     id: str
@@ -43,6 +49,9 @@ class CodeElement(BaseModel):
                 "lang": "rust"
             }
         }
+
+class CodeObject(BaseModel):
+    Code: CodeElement
 
 class ListItem(BaseModel):
     id: str
@@ -93,6 +102,9 @@ class BulletListElement(BaseModel):
             }
         }
 
+class BulletListObject(BaseModel):
+    BulletList: BulletListElement
+
 class ImageElement(BaseModel):
     id: str
     uri: str
@@ -105,9 +117,10 @@ class ImageElement(BaseModel):
             }
         }
 
+class ImageObject(BaseModel):
+    Image: ImageElement
+
 class PageElement(BaseModel):
-    # type: str
-    # id: str
     Heading: Optional[HeadingElement] = None
     Paragraph: Optional[ParagraphElement] = None
     Code: Optional[CodeElement] = None
@@ -128,7 +141,7 @@ class PageElement(BaseModel):
 class Page(BaseModel):
     p_id: str
     heading: str
-    page_elements: List[PageElement]
+    page_elements: List[Union[ParagraphObject, HeadingObject, CodeObject, BulletListObject, ImageObject]]
 
 class OID(BaseModel):
     oid: str
