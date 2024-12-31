@@ -4,28 +4,126 @@ import os
 from pydantic import BaseModel
 from typing import List, Optional
 
-class ListItem(BaseModel):
+class HeadingElement(BaseModel):
     id: str
-    value: str
-
-class PageElement(BaseModel):
-    type: str  # Discriminator field to specify the element type
-    id: str
-    data: Optional[str] = None
-    htype: Optional[int] = None
-    lang: Optional[str] = None
-    lists: Optional[List[ListItem]] = None
-    uri: Optional[str] = None
+    data: str
+    htype: int
 
     class Config:
         json_schema_extra = {
             "example": {
-                "type": "Paragraph",
-                "id": "para-1",
-                "data": "This is a paragraph."
+                "id": "66ad15df3e2b4e1de23b3af5",
+                "data": "Building Backend",
+                "htype": 1
             }
         }
 
+class ParagraphElement(BaseModel):
+    id: str
+    data: str
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "id": "66ad16093e2b4e1de23b3af7",
+                "data": "Actix-web is a framework in rust to build complex highly sclable and blazingly fast web backends,it include features like logging chaining,middlewares,loggers,sharing database pool for multiple databses etc.\n\nwe will dive deep into building complex parts of backend,so that you can start building your idea."
+            }
+        }
+
+class CodeElement(BaseModel):
+    id: str
+    data: str
+    lang: str
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "id": "66bf7aee545b521aeaebb02f",
+                "data": "pub async fn get_courses()->impl Responder{\n     match get_user_repository().await{\n          Ok()=>{\n               return HttpResponse::Ok()\n          },\n          Err()=>{\n               return HttpResponse::BadRequest()\n          }\n     }\n}",
+                "lang": "rust"
+            }
+        }
+
+class ListItem(BaseModel):
+    id: str
+    value: str
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "id": "66bcbb5903ac6c52820e3d8a",
+                "value": "One of the standout features of Rust is its ownership system, which ensures memory safety without needing a garbage collector."
+            }
+        }
+
+class BulletListElement(BaseModel):
+    id: str
+    lists: List[ListItem]
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "id": "669179ba693714ddce85cd83",
+                "lists": [
+                {
+                    "id": "66923fe319bc07581ce3647b",
+                    "value": "Rust is a systems programming language that has gained significant attention and popularity since its inception.                                                            "
+                },
+                {
+                    "id": "66bcbb5903ac6c52820e3d8a",
+                    "value": "One of the standout features of Rust is its ownership system, which ensures memory safety without needing a garbage collector."
+                },
+                {
+                    "id": "669179d8693714ddce85cd85",
+                    "value": "Its primary design goals are safety, speed, and concurrency. Rust is syntactically similar to C++ but provides better memory safety while maintaining performance."
+                },
+                {
+                    "id": "66917a00693714ddce85cd87",
+                    "value": "This system enforces strict rules on how memory is managed, significantly reducing the likelihood of null pointer dereferences, buffer overflows, and data races."
+                },
+                {
+                    "id": "66bcbb6103ac6c52820e3d8b",
+                    "value": "Become super proficient in Rust to get job in companies like Anthropic,Microsoft,Openai,and Ola cabs."
+                },
+                {
+                    "id": "67147fbdbece8b4af9fa2bf7",
+                    "value": "Hai everyone this is bullet line number six..."
+                }
+                ]
+            }
+        }
+
+class ImageElement(BaseModel):
+    id: str
+    uri: str
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "id": "66cb593378a693fe12d2792d",
+                "uri": "https://cdn.torchend.com/meta_c2b83f09f7f764cd902a3ba3"
+            }
+        }
+
+class PageElement(BaseModel):
+    # type: str
+    # id: str
+    Heading: Optional[HeadingElement] = None
+    Paragraph: Optional[ParagraphElement] = None
+    Code: Optional[CodeElement] = None
+    Image: Optional[ImageElement] = None
+    BulletList: Optional[BulletListElement] = None
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "Heading": {
+                    "id": "6728c4efdf839837d6b5b844",
+                    "data": "Convolution Neural Network",
+                    "htype": 1
+                }
+            }
+        }
 
 class Page(BaseModel):
     p_id: str
@@ -47,49 +145,96 @@ class Document(BaseModel):
     class Config:
         json_schema_extra = {
             "example": {
-                "_id": {"oid": "unique-object-id"},
-                "id": "document-id",
-                "title": "Sample Document",
+                "_id": {"oid": "66ab314b67082310f8c1dc4a"},
+                "id": "369",
+                "title": "Complete Rust-Backend Course",
                 "pages": [
                     {
-                        "p_id": "page-1",
-                        "heading": "Page 1 Heading",
+                        "p_id": "668014e8ad94a2476284f09d",
+                        "heading": "Configure AWS S3",
                         "page_elements": [
                             {
-                                "type": "Heading",
-                                "id": "heading-1",
-                                "data": "Introduction",
-                                "htype": 1
+                                "Heading": {
+                                    "id": "6728c4efdf839837d6b5b844",
+                                    "data": "Convolution Neural Network",
+                                    "htype": 1
+                                }
                             },
                             {
-                                "type": "Paragraph",
-                                "id": "para-1",
-                                "data": "This is a paragraph."
+                                "Heading": {
+                                    "id": "6728c77adf839837d6b5b847",
+                                    "data": "Introduction",
+                                    "htype": 2
+                                }
                             },
                             {
-                                "type": "Code",
-                                "id": "code-1",
-                                "data": "print(\"Hello World\")",
-                                "lang": "python"
+                                "Code": {
+                                    "id": "66bf7aee545b521aeaebb02f",
+                                    "data": "pub async fn get_courses()->impl Responder{\n     match get_user_repository().await{\n          Ok()=>{\n               return HttpResponse::Ok()\n          },\n          Err()=>{\n               return HttpResponse::BadRequest()\n          }\n     }\n}",
+                                    "lang": "rust"
+                                }
                             },
                             {
-                                "type": "BulletList",
-                                "id": "list-1",
-                                "lists": [
-                                    {"id": "item-1", "value": "First item"},
-                                    {"id": "item-2", "value": "Second item"}
-                                ]
+                                "Heading": {
+                                    "id": "66aa74d8a41ccc7f4df55bdb",
+                                    "data": "Features",
+                                    "htype": 2
+                                }
                             },
                             {
-                                "type": "Image",
-                                "id": "image-1",
-                                "uri": "http://example.com/image.png"
-                            }
+                                "Image": {
+                                    "id": "669793df128074237bc4a790",
+                                    "uri": "https://cdn.torchend.com/meta_7acd082c23fe862fefeda08e"
+                                }
+                            },
+                            {
+                                "Paragraph": {
+                                    "id": "669f8a3f8fea995074f977ad",
+                                    "data": "Here is a basic NeuralNetwork built using Pytorch\nit uses nn.Module as Parent class"
+                                }
+                            },
+                            {
+                                "BulletList": {
+                                    "id": "669179ba693714ddce85cd83",
+                                    "lists": [
+                                    {
+                                        "id": "66923fe319bc07581ce3647b",
+                                        "value": "Rust is a systems programming language that has gained significant attention and popularity since its inception.                                                            "
+                                    },
+                                    {
+                                        "id": "66bcbb5903ac6c52820e3d8a",
+                                        "value": "One of the standout features of Rust is its ownership system, which ensures memory safety without needing a garbage collector."
+                                    },
+                                    {
+                                        "id": "669179d8693714ddce85cd85",
+                                        "value": "Its primary design goals are safety, speed, and concurrency. Rust is syntactically similar to C++ but provides better memory safety while maintaining performance."
+                                    },
+                                    {
+                                        "id": "66917a00693714ddce85cd87",
+                                        "value": "This system enforces strict rules on how memory is managed, significantly reducing the likelihood of null pointer dereferences, buffer overflows, and data races."
+                                    },
+                                    {
+                                        "id": "66bcbb6103ac6c52820e3d8b",
+                                        "value": "Become super proficient in Rust to get job in companies like Anthropic,Microsoft,Openai,and Ola cabs."
+                                    },
+                                    {
+                                        "id": "67147fbdbece8b4af9fa2bf7",
+                                        "value": "Hai everyone this is bullet line number six..."
+                                    }
+                                    ]
+                                }
+                            },
+                            {
+                                "Image": {
+                                    "id": "66cb593378a693fe12d2792d",
+                                    "uri": "https://cdn.torchend.com/meta_c2b83f09f7f764cd902a3ba3"
+                                }
+                            },
                         ]
                     }
                 ],
                 "image_uri": "http://example.com/document-preview.png",
-                "path": "/documents/doc1",
+                "path": "complete-rust-backend-course",
                 "publish": True
             }
         }
@@ -175,7 +320,7 @@ def generate_document():
 def generate_element():
     content = request.json["message"]
     element_type = request.json["type"]
-    print(content)
+    # print(content)
     message = f"Generate a {element_type} element about {content}."
     chat_history.append({"role":"user","content": content})
     try:

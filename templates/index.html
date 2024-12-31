@@ -55,6 +55,7 @@
         .addEventListener("submit", function (event) {
           event.preventDefault();
           let prompt = '';
+          let formTarget = '';
           const messageInput = document.querySelector(
             "#prompt"
           );
@@ -81,8 +82,14 @@
           }
           // Clear the message input
           messageInput.value = "";
+          // Check for prompt element type
+          if (elementType === "Document") {
+            formTarget = "/document";
+          } else {
+            formTarget = "/element";
+          }
           // Send the user's message to the server using AJAX
-          fetch("/element", {
+          fetch(formTarget, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
