@@ -120,21 +120,33 @@ class ImageElement(BaseModel):
 class ImageObject(BaseModel):
     Image: ImageElement
 
-class PageElement(BaseModel):
-    Heading: Optional[HeadingElement] = None
-    Paragraph: Optional[ParagraphElement] = None
-    Code: Optional[CodeElement] = None
-    Image: Optional[ImageElement] = None
-    BulletList: Optional[BulletListElement] = None
+class PageElements(BaseModel):
+    list: List[Union[ParagraphObject, HeadingObject, CodeObject, BulletListObject, ImageObject]]
 
     class Config:
         json_schema_extra = {
             "example": {
-                "Heading": {
-                    "id": "6728c4efdf839837d6b5b844",
-                    "data": "Convolution Neural Network",
-                    "htype": 1
-                }
+                "list": [
+                    {
+                        "Heading": {
+                            "id": "6728c4efdf839837d6b5b844",
+                            "data": "Convolution Neural Network",
+                            "htype": 1
+                        }
+                    },
+                    {
+                        "Image": {
+                            "id": "669793df128074237bc4a790",
+                            "uri": "https://cdn.torchend.com/meta_7acd082c23fe862fefeda08e"
+                        }
+                    },
+                    {
+                        "Paragraph": {
+                            "id": "669f8a3f8fea995074f977ad",
+                            "data": "Here is a basic NeuralNetwork built using Pytorch\nit uses nn.Module as Parent class"
+                        }
+                    },
+                ]
             }
         }
 
@@ -259,6 +271,14 @@ client = OpenAI()
 app = Flask(__name__)
 app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
 
+pageElements = {
+    "Heading":HeadingObject,
+    "Paragraph":ParagraphObject,
+    "BulletList":BulletListObject,
+    "Code":CodeObject,
+    "Image":ImageObject,
+    "Elements":PageElements
+}
 chat_history = []
 
 @app.route("/", methods=['GET','POST'])
@@ -304,6 +324,7 @@ def generate_document():
                 {"role": "user", "content": content}
             ]
         )
+        
     except Exception as e:
         print(e)
         return jsonify(success=False, message=str(e)), 500
@@ -338,7 +359,7 @@ def generate_element():
     chat_history.append({"role":"user","content": content})
     try:
         completion = client.beta.chat.completions.parse(
-            response_format=PageElement,
+            response_format=pageElements[element_type],
             model="gpt-4o-mini",
             messages=[
                 {
