@@ -1,9 +1,10 @@
 from flask import Flask, render_template, request, jsonify
 from openai import OpenAI
 import os
+import hashlib
+import time
 from pydantic import BaseModel
 from typing import List, Union
-import hashlib
 
 class HeadingElement(BaseModel):
     id: str
@@ -354,7 +355,6 @@ def generate_document():
 def generate_element():
     content = request.json["message"]
     element_type = request.json["type"]
-    # print(content)
     message = f"Generate a {element_type} element about {content}."
     chat_history.append({"role":"user","content": content})
     try:
@@ -382,8 +382,15 @@ def generate_element():
         text_content = response.message.parsed
 
         if text_content:
+            # Convert the Document instance to a dictionary
+            text_content_dict = text_content.model_dump()
+
+            # Print the JSON response (for debugging purposes)
+            print("JSON Response from OpenAI:", text_content_dict)  # You can also use logging
+
+            # Generating image if image element
             if element_type == "Image":
-                image_prompt = completion.choices[0].message.parsed.data
+                image_prompt = text_content.data
                 try:
                     image_completion = client.images.generate(
                         model="dall-e-3",
@@ -398,11 +405,20 @@ def generate_element():
                 except Exception as e:
                     print(e)
                     return jsonify(success=False, message=str(e)), 500
-            # Convert the Document instance to a dictionary
-            text_content_dict = text_content.model_dump()
+            
+            # Creating a hash ID for element
+            timestamp = int(time.time())
+            text_content_data = text_content_dict[element_type]["data"]
+            combined_data = f"{timestamp}:{text_content_data}"
+            sha1_hash = hashlib.sha1(combined_data.encode()).hexdigest()
 
-            # Print the JSON response (for debugging purposes)
-            print("JSON Response from OpenAI:", text_content_dict)  # You can also use logging
+            # Truncate to the first 24 characters
+            truncated_hash = sha1_hash[:24]
+
+            print(truncated_hash)
+
+            # Update the ID of the element
+            text_content_dict[element_type]["id"] = truncated_hash
 
             # Append to chat history
             chat_history.append({"role": "assistant", "content": text_content_dict})
