@@ -2,7 +2,8 @@ from flask import Flask, render_template, request, jsonify
 from openai import OpenAI
 import os
 from pydantic import BaseModel
-from typing import List, Optional, Union
+from typing import List, Union
+import hashlib
 
 class HeadingElement(BaseModel):
     id: str
@@ -276,8 +277,7 @@ pageElements = {
     "Paragraph":ParagraphObject,
     "BulletList":BulletListObject,
     "Code":CodeObject,
-    "Image":ImageObject,
-    "Elements":PageElements
+    "Image":ImageObject
 }
 chat_history = []
 
@@ -398,6 +398,53 @@ def generate_element():
                 except Exception as e:
                     print(e)
                     return jsonify(success=False, message=str(e)), 500
+            # Convert the Document instance to a dictionary
+            text_content_dict = text_content.model_dump()
+
+            # Print the JSON response (for debugging purposes)
+            print("JSON Response from OpenAI:", text_content_dict)  # You can also use logging
+
+            # Append to chat history
+            chat_history.append({"role": "assistant", "content": text_content_dict})
+
+            return jsonify(success=True, message=text_content_dict)
+        else:
+            return jsonify(success=False, message="No text content found")
+    except Exception as e:
+        print(e)
+        return jsonify(success=False, message=str(e)), 500
+    
+@app.route("/elements", methods=["POST",])
+def generate_elements():
+    content = request.json["message"]
+    # print(content)
+    message = content
+    chat_history.append({"role":"user","content": content})
+    try:
+        completion = client.beta.chat.completions.parse(
+            response_format=PageElements,
+            model="gpt-4o-mini",
+            messages=[
+                {
+                    "role": "system",
+                    "content": "You are a document generator platform. You will be given a topic and must generate an appropriate amount of page elements to describe the topic in the given structure."
+                },
+                {
+                    "role": "user",
+                    "content": message,
+                }
+            ]
+        )
+
+    except Exception as e:
+        print(e)
+        return jsonify(success=False, message=str(e)), 500
+
+    try:
+        response = completion.choices[0]
+        text_content = response.message.parsed
+
+        if text_content:
             # Convert the Document instance to a dictionary
             text_content_dict = text_content.model_dump()
 
