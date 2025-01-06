@@ -282,8 +282,8 @@ pageElements = {
 }
 chat_history = []
 
-@app.route("/", methods=['GET','POST'])
-@app.route("/<name>", methods=['GET','POST'])
+@app.route("/", methods=['GET',])
+@app.route("/<name>", methods=['GET',])
 def index(name=None):
     return render_template("index.html",person=name, chat_history=chat_history)
 
@@ -476,3 +476,18 @@ def generate_elements():
     except Exception as e:
         print(e)
         return jsonify(success=False, message=str(e)), 500
+
+@app.route("/deepseek", methods=["POST",])
+def deepseek_test():
+    client = OpenAI(api_key=os.getenv("DEEPSEEK_API_KEY"), base_url="https://api.deepseek.com")
+
+    response = client.chat.completions.create(
+        model="deepseek-chat",
+        messages=[
+            {"role": "system", "content": "You are a helpful assistant"},
+            {"role": "user", "content": "Hello"},
+        ],
+        stream=False
+    )
+
+    print(response.choices[0].message.content)
